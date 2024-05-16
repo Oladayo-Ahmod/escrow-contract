@@ -37,3 +37,15 @@ zkSync is a layer 2 scaling solution for Ethereum. It is designed not only to in
 * Node js is installed on your machine.
 
 ## Environment Setup
+
+zkSync provides easy ways to get started with setting your environment by providing great plugins on Hardhat and Foundry. You can get started by using use one of the two. However, for this tutorial, we will be using hardhat.
+
+Run the below command inside your terminal to create the project with the necessary dependencies.
+
+```bash
+npx zksync-cli create demo --template hardhat_solidity
+```
+You will be prompted to enter your private key for the project. Enter your private or skip to set it later.
+![escrow-2](https://github.com/Oladayo-Ahmod/escrow-contract/assets/57647734/58d79069-be52-45e0-b9c1-dfe89229494e)
+
+
