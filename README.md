@@ -46,6 +46,15 @@ Run the below command inside your terminal to create the project with the necess
 npx zksync-cli create demo --template hardhat_solidity
 ```
 You will be prompted to enter your private key for the project. Enter your private or skip to set it later.
-![escrow-2](https://github.com/Oladayo-Ahmod/escrow-contract/assets/57647734/58d79069-be52-45e0-b9c1-dfe89229494e)
+
+![escrow2](https://github.com/Oladayo-Ahmod/escrow-contract/assets/57647734/ece399b0-9fc6-492d-a4f7-4e84ee040119)
+
+Next, you will prompted to select package manager. You can select the most comfortable one for you. However, for this tutorial, we will select npm.
+
+![escrow3](https://github.com/Oladayo-Ahmod/escrow-contract/assets/57647734/879bc94e-a552-4096-a078-8e783d6e9a6d)
+
+After selecting npm or your desired package manager, all the required dependencies will be installed.
+
+
 
 
