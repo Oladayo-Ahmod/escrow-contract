@@ -100,6 +100,7 @@ Finally, run npm install to install all the dependencies. If you are using yarn 
 Now that we have installed our project dependencies. Let's begin writing our smart contract.
 Inside your `contract` folder, create a new file named Escrow.sol. This file will contain all the Escrow's contract codes.
 
+#### SPDX License Identifier
 In solidity, the first thing to declare when writing a smart contract is to declare the `spdx-lisense-identifier` .
 
 ```solidity
@@ -107,3 +108,4 @@ In solidity, the first thing to declare when writing a smart contract is to decl
 ```
 
 #### Solidity Version
+Next, let's define the contract pragma solidity version. In our case, 0.8.17.
