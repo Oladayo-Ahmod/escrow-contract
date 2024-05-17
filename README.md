@@ -1,4 +1,4 @@
-![escrow5](https://github.com/Oladayo-Ahmod/escrow-contract/assets/57647734/edfaeb18-9a25-41b6-8ba0-0164f8cb5b33)![zksync-logo_upscaled](https://github.com/Oladayo-Ahmod/escrow-contract/assets/57647734/2d905a0b-4434-4763-979b-ad06a14435d1)
+![zksync-logo_upscaled](https://github.com/Oladayo-Ahmod/escrow-contract/assets/57647734/2d905a0b-4434-4763-979b-ad06a14435d1)
 
 # A Step-by-Step Guide to Building a Decentralized Escrow System on zkSync.
 
