@@ -59,37 +59,7 @@ After selecting npm or your desired package manager, all the required dependenci
 
 ### Project structure
 
-📁 Escrow-contract
-
-├── 📁 contracts
-
-│   ├── 📁 erc20
-
-│   │   └── ERC20Token.sol      
-- │   ├── 📁 nft
-│   │   └── NFTContract.sol    
-- │   ├── 📁 paymasters
-│   │   └── Paymaster.sol       
-│   └── Greeter.sol             
-│
-├── 📁 deploy
-│   ├── 📁 erc20
-│   │   └── deployERC20.ts      
-│   ├── 📁 nft
-│   │   └── deployNFT.ts        
-│   ├── deploy.ts               
-│   ├── interact.ts             
-│   └── utils.ts                
-│
-├── 📁 test
-│   ├── 📁 erc20
-│   │   └── erc20Token.test.ts 
-│   ├── 📁 nft
-│   │   └── nftContract.test.ts 
-│   └── greeter.test.ts         
-└─
-
-# 📁 Escrow-contract
+#### 📁 Escrow-contract
 - **📁 contracts**
   - **📁 erc20**
     - 📄 ERC20Token.sol
