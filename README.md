@@ -674,8 +674,8 @@ Finally, proceed to your terminal and run the deploy script by entering the foll
 ``` npm run deploy```
 
 Your output should be similar to the below output if it is successfully deployed. However, `estimated deployment cost`,`contract address`, and `verification ID` may be different.
+![escrow5](https://github.com/Oladayo-Ahmod/escrow-contract/assets/57647734/32bbb365-db83-44a3-8cce-2275351d57ab)
 
-![escrow6](https://github.com/Oladayo-Ahmod/escrow-contract/assets/57647734/6cc27f08-c3ff-4e84-a38c-e8ab593f08d3)
 
 Congratulation! You have successfully written, tested, and deployed a decentralized escrow system on zkSync.
 
