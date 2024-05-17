@@ -23,7 +23,6 @@ transparent, and efficient transactions on zkSync, a cutting-edge layer 2 scalin
 -  [Compiling Smart Contract](#compiling-smart-contract)
 -  [Writing Tests](#writing-tests)
 -  [Deploying Smart Contract](#deploying-smart-contract)
--  [Conclusion](#conclusion)
 
 ## Introduction
 
