@@ -341,7 +341,7 @@ The `refundPayment` function allows either the purchaser or the intermediary to 
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.17;
 
-contract SecureEscrow {
+contract Escrow {
     address public purchaser;
     address public vendor;
     address public intermediary;
