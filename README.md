@@ -42,7 +42,7 @@ zkSync provides easy ways to get started with setting your environment by provid
 Run the below command inside your terminal to create the project with the necessary dependencies.
 
 ```bash
-npx zksync-cli create demo --template hardhat_solidity
+npx zksync-cli create escrow-contract --template hardhat_solidity
 ```
 You will be prompted to enter your private key for the project. Enter your private or skip to set it later.
 
