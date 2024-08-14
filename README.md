@@ -843,6 +843,7 @@ contract GaslessPaymaster is IPaymaster, Ownable {
 ```
 
 ## Deploying Smart Contract
+
 A few things are required to do to deploy this smart contract to zkSync.
 
 Firstly, go ahead and enter your private key in the `.env` file in the root directory.
@@ -872,12 +873,36 @@ Your output should be similar to the below output if it is successfully deployed
 
 ## Deploying and Funding Paymaster
 
-To deploy and fund the Paymaster, create a file named `deploy-paymaster.js` inside your `deploy` folder.
+To deploy and fund the Paymaster, create a file named `deploy-paymaster.ts` inside your `deploy` folder.
 
 and paste the following code there.
 
 ```typescript
+import { deployContract, getWallet, getProvider } from "./utils";
+import * as ethers from "ethers";
 
+export default async function () {
+   await deployContract("Escrow",[]);
+  const paymaster = await deployContract("GaslessPaymaster");
+
+  const paymasterAddress = await paymaster.getAddress();
+
+  // Supplying paymaster with ETH
+  console.log("Funding paymaster with ETH...");
+  const wallet = getWallet();
+  await (
+    await wallet.sendTransaction({
+      to: paymasterAddress,
+      value: ethers.parseEther("0.08"),
+    })
+  ).wait();
+
+  const provider = getProvider();
+  const paymasterBalance = await provider.getBalance(paymasterAddress);
+  console.log(`Paymaster ETH balance is now ${paymasterBalance.toString()}`);
+
+  console.log(`Done!`);
+}
 ```
 Congratulation! You have successfully written, tested, and deployed a decentralized escrow system on zkSync.
 
