@@ -24,6 +24,7 @@ transparent, and efficient transactions on zkSync, a cutting-edge layer 2 scalin
 -  [Writing Tests](#writing-tests)
 -  [Paymaster Introduction](#paymaster-introduction)
 -  [Paymaster Integration](#paymaster-integration)
+-  [Paymaster Complete Code](#paymaster-complete-code)
 -  [Deploying Smart Contract](#deploying-smart-contract)
 
 ## Introduction
@@ -746,6 +747,101 @@ Finally, let's create a `withdraw` function to allow the contract owner to withd
     }
 ```
 
+And lastly, let's create a `recieve` function to allow the contract to receive payments.
+
+```solidity
+receive() external payable {}
+```
+
+## Paymaster Complete Code
+
+```solidity
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import {IPaymaster, ExecutionResult, PAYMASTER_VALIDATION_SUCCESS_MAGIC} from "@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IPaymaster.sol";
+import {IPaymasterFlow} from "@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IPaymasterFlow.sol";
+import {TransactionHelper, Transaction} from "@matterlabs/zksync-contracts/l2/system-contracts/libraries/TransactionHelper.sol";
+
+import "@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol";
+
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+/// @author Matter Labs
+/// @notice This contract does not include any validations other than using the paymaster general flow.
+contract GaslessPaymaster is IPaymaster, Ownable {
+    modifier onlyBootloader() {
+        require(
+            msg.sender == BOOTLOADER_FORMAL_ADDRESS,
+            "Only bootloader can call this method"
+        );
+        // Continue execution if called from the bootloader.
+        _;
+    }
+
+    function validateAndPayForPaymasterTransaction(
+        bytes32,
+        bytes32,
+        Transaction calldata _transaction
+    )
+        external
+        payable
+        onlyBootloader
+        returns (bytes4 magic, bytes memory context)
+    {
+        // By default we consider the transaction as accepted.
+        magic = PAYMASTER_VALIDATION_SUCCESS_MAGIC;
+        require(
+            _transaction.paymasterInput.length >= 4,
+            "The standard paymaster input must be at least 4 bytes long"
+        );
+
+        bytes4 paymasterInputSelector = bytes4(
+            _transaction.paymasterInput[0:4]
+        );
+        if (paymasterInputSelector == IPaymasterFlow.general.selector) {
+            // Note, that while the minimal amount of ETH needed is tx.gasPrice * tx.gasLimit,
+            // neither paymaster nor account are allowed to access this context variable.
+            uint256 requiredETH = _transaction.gasLimit *
+                _transaction.maxFeePerGas;
+
+            // The bootloader never returns any data, so it can safely be ignored here.
+            (bool success, ) = payable(BOOTLOADER_FORMAL_ADDRESS).call{
+                value: requiredETH
+            }("");
+            require(
+                success,
+                "Failed to transfer tx fee to the Bootloader. Paymaster balance might not be enough."
+            );
+        } else {
+            revert("Unsupported paymaster flow in paymasterParams.");
+        }
+    }
+
+    function postTransaction(
+        bytes calldata _context,
+        Transaction calldata _transaction,
+        bytes32,
+        bytes32,
+        ExecutionResult _txResult,
+        uint256 _maxRefundedGas
+    ) external payable override onlyBootloader {
+        // Refunds are not supported yet.
+    }
+
+    function withdraw(address payable _to) external onlyOwner {
+        // send paymaster funds to the owner
+        uint256 balance = address(this).balance;
+        (bool success, ) = _to.call{value: balance}("");
+        require(success, "Failed to withdraw funds from paymaster.");
+    }
+
+    receive() external payable {}
+}
+
+```
+
 ## Deploying Smart Contract
 A few things are required to do to deploy this smart contract to zkSync.
 
@@ -774,6 +870,15 @@ Your output should be similar to the below output if it is successfully deployed
 ![escrow5](https://github.com/Oladayo-Ahmod/escrow-contract/assets/57647734/32bbb365-db83-44a3-8cce-2275351d57ab)
 
 
+## Deploying and Funding Paymaster
+
+To deploy and fund the Paymaster, create a file named `deploy-paymaster.js` inside your `deploy` folder.
+
+and paste the following code there.
+
+```typescript
+
+```
 Congratulation! You have successfully written, tested, and deployed a decentralized escrow system on zkSync.
 
 
