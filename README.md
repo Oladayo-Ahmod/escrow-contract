@@ -22,6 +22,8 @@ transparent, and efficient transactions on zkSync, a cutting-edge layer 2 scalin
 -  [Complete Code](#complete-Code)
 -  [Compiling Smart Contract](#compiling-smart-contract)
 -  [Writing Tests](#writing-tests)
+-  [Paymaster Introduction](#paymaster-introduction)
+-  [Paymaster Integration](#paymaster-integration)
 -  [Deploying Smart Contract](#deploying-smart-contract)
 
 ## Introduction
@@ -617,6 +619,132 @@ Next, run the below command in your terminal.
 
 You should see a similar output if all the tests passed.
 ![escrow4](https://github.com/Oladayo-Ahmod/escrow-contract/assets/57647734/e07775df-010b-493b-8787-8ee5333d8c4d)
+
+## Paymaster Introduction
+
+A paymaster is a specialized smart contract designed to manage or sponsor transaction fees on behalf of other accounts. By acting as an intermediary, paymasters offer a range of benefits to users, developers, and the overall network
+
+Paymaster originally focused on minimizing user transaction costs by covering transaction fees, making dApps more accessible and user-friendly because lower transaction costs can attract more users to a platform.
+
+Paymaster is essentially a smart contract that can cover transaction costs for other users,
+making the dApp transactions free for end-users. One of the important aspects of Paymaster is the ability to use the ERC token instead of the Zksync native token.
+
+Paymaster can be designed to handle transactions automatically or designed to require user interactions before execution.
+
+## Paymaster Integration
+
+In this section, we will be creating and integrating the Paymaster contract in our dApp to sponsor every gas fee incurred by users.
+
+Go ahead and create a file named `Paymaster.sol` in your contracts directory i.e in the same folder as `Escrow.sol`.
+
+Next, let's import the necessary interfaces and libraries for paymaster functionality. You do not need to install these dependencies manually because they have already been generated when you run the `cli` command for installations.
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import {IPaymaster, ExecutionResult, PAYMASTER_VALIDATION_SUCCESS_MAGIC} from "@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IPaymaster.sol";
+import {IPaymasterFlow} from "@matterlabs/zksync-contracts/l2/system-contracts/interfaces/IPaymasterFlow.sol";
+import {TransactionHelper, Transaction} from "@matterlabs/zksync-contracts/l2/system-contracts/libraries/TransactionHelper.sol";
+
+import "@matterlabs/zksync-contracts/l2/system-contracts/Constants.sol";
+
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+```
+
+After that, let's define a contract named `GaslessPaymaster` that inherits from IPaymaster and Ownable.
+
+```solidity
+contract GaslessPaymaster is IPaymaster, Ownable {
+
+}
+```
+
+Next, let's define a modifier called `onlyBootloader` that restricts function calls to the bootloader contract.
+
+```solidity
+  modifier onlyBootloader() {
+        require(
+            msg.sender == BOOTLOADER_FORMAL_ADDRESS,
+            "Only bootloader can call this method"
+        );
+        // Continue execution if called from the bootloader.
+        _;
+    }
+```
+
+Let's begin writing the functions needed for our Paymaster's contract. 
+
+```solidity
+ function validateAndPayForPaymasterTransaction(
+        bytes32,
+        bytes32,
+        Transaction calldata _transaction
+    )
+        external
+        payable
+        onlyBootloader
+        returns (bytes4 magic, bytes memory context)
+    {
+        // By default we consider the transaction as accepted.
+        magic = PAYMASTER_VALIDATION_SUCCESS_MAGIC;
+        require(
+            _transaction.paymasterInput.length >= 4,
+            "The standard paymaster input must be at least 4 bytes long"
+        );
+
+        bytes4 paymasterInputSelector = bytes4(
+            _transaction.paymasterInput[0:4]
+        );
+        if (paymasterInputSelector == IPaymasterFlow.general.selector) {
+            // Note, that while the minimal amount of ETH needed is tx.gasPrice * tx.gasLimit,
+            // neither paymaster nor account are allowed to access this context variable.
+            uint256 requiredETH = _transaction.gasLimit *
+                _transaction.maxFeePerGas;
+
+            // The bootloader never returns any data, so it can safely be ignored here.
+            (bool success, ) = payable(BOOTLOADER_FORMAL_ADDRESS).call{
+                value: requiredETH
+            }("");
+            require(
+                success,
+                "Failed to transfer tx fee to the Bootloader. Paymaster balance might not be enough."
+            );
+        } else {
+            revert("Unsupported paymaster flow in paymasterParams.");
+        }
+    }
+
+```
+
+This function is called by the bootloader to validate and pay for a transaction.
+
+Next, let's declare `PostTransaction` which is called after the transaction execution. Currently, it does nothing as refunds are not supported yet.
+
+```solidity
+function postTransaction(
+        bytes calldata _context,
+        Transaction calldata _transaction,
+        bytes32,
+        bytes32,
+        ExecutionResult _txResult,
+        uint256 _maxRefundedGas
+    ) external payable override onlyBootloader {
+        // Refunds are not supported yet.
+    }
+```
+
+Finally, let's create a `withdraw` function to allow the contract owner to withdraw any remaining funds.
+
+```solidity
+ function withdraw(address payable _to) external onlyOwner {
+        // send paymaster funds to the owner
+        uint256 balance = address(this).balance;
+        (bool success, ) = _to.call{value: balance}("");
+        require(success, "Failed to withdraw funds from paymaster.");
+    }
+```
 
 ## Deploying Smart Contract
 A few things are required to do to deploy this smart contract to zkSync.
