@@ -894,7 +894,7 @@ export default async function () {
   await (
     await wallet.sendTransaction({
       to: paymasterAddress,
-      value: ethers.parseEther("0.08"),
+      value: ethers.parseEther("0.05"),
     })
   ).wait();
 
@@ -916,16 +916,42 @@ Finally, the function below get the wallet through the supplied private key in t
   await (
     await wallet.sendTransaction({
       to: paymasterAddress,
-      value: ethers.parseEther("0.08"),
+      value: ethers.parseEther("0.05"),
     })
   ).wait();
 ```
 
-Finally, proceed to your terminal and run the deploy script by entering the following command.
+Note: before you proceed to deploy your contracts, ensure wallet balance is more than the amount you are funding and re-compile your contracts by running `npm run compile`. Your result should be similar to the below result if your contracts compile successfully. You can ignore the warning errors, these won't affect the functionalities.
 
-``` npm run deploy```
+To make the deployment easy, go to your `package.json` and this command below to your `deploy`script.
+
+```js
+"deploy-paymaster": "hardhat deploy-zksync --script deploy-paymaster.ts",
+```
+
+Your script commands should look like this now.
+
+```javascript
+  "scripts": {
+    "deploy": "hardhat deploy-zksync --script deploy.ts",
+    "deploy-paymaster": "hardhat deploy-zksync --script deploy-paymaster.ts",
+    "interact": "hardhat deploy-zksync --script interact.ts",
+    "compile": "hardhat compile",
+    "clean": "hardhat clean",
+    "test": "hardhat test --network hardhat"
+  },
+```
 
 
-Congratulation! You have successfully written, tested, and deployed a decentralized escrow system on zkSync.
+Finally, proceed to your terminal and run the paymaster deployment script by entering the following command.
+
+``` npm run deploy-paymaster```
+
+If your deployment is successful, you should get a similar result in your terminal like the one below :
+
+
+
+
+Congratulation! You have successfully written, tested, and deployed a gasless decentralized escrow system on zkSync.
 
 
