@@ -26,6 +26,7 @@ transparent, and efficient transactions on zkSync, a cutting-edge layer 2 scalin
 -  [Paymaster Integration](#paymaster-integration)
 -  [Paymaster Complete Code](#paymaster-complete-code)
 -  [Deploying Smart Contract](#deploying-smart-contract)
+-  [Deploying and Funding Paymaster](#deploying-and-funding-paymaster)
 
 ## Introduction
 
@@ -904,6 +905,27 @@ export default async function () {
   console.log(`Done!`);
 }
 ```
+
+Our contract name `Escrow` is passed in `deployContract` function and empty array `[]` is passed as the second argument because the contract's constructor doesn't require an argument while paymaster contract's name 
+`GaslessPaymaster` is passed in the second `deployContract` function.
+
+Finally, the function below get the wallet through the supplied private key in the `.env` and funds it with `0.08 ETH`. 
+
+```javascript
+ const wallet = getWallet();
+  await (
+    await wallet.sendTransaction({
+      to: paymasterAddress,
+      value: ethers.parseEther("0.08"),
+    })
+  ).wait();
+```
+
+Finally, proceed to your terminal and run the deploy script by entering the following command.
+
+``` npm run deploy```
+
+
 Congratulation! You have successfully written, tested, and deployed a decentralized escrow system on zkSync.
 
 
