@@ -41,7 +41,7 @@ zkSync is a layer 2 scaling solution for Ethereum. It is designed not only to in
 
 ## Environment Setup
 
-zkSync provides easy ways to get started with setting your environment by providing great plugins on Hardhat and Foundry. You can get started by using use one of the two. However, for this tutorial, we will be using hardhat.
+zkSync provides easy ways to get started with setting your environment by giving great plugins on Hardhat and Foundry. You can get started by using use one of the two. However, we will be using hardhat for this tutorial.
 
 Run the below command inside your terminal to create the project with the necessary dependencies.
 
@@ -908,6 +908,8 @@ export default async function () {
 
 Our contract name `Escrow` is passed in `deployContract` function and empty array `[]` is passed as the second argument because the contract's constructor doesn't require an argument while paymaster contract's name 
 `GaslessPaymaster` is passed in the second `deployContract` function.
+
+However, you can comment out this line ` await deployContract("Escrow",[]);` if you already have a deployed contract and you do not want to redeploy it.
 
 Finally, the function below get the wallet through the supplied private key in the `.env` and funds it with `0.08 ETH`. 
 
