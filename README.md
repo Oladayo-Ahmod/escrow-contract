@@ -923,6 +923,9 @@ Finally, the function below get the wallet through the supplied private key in t
 
 Note: before you proceed to deploy your contracts, ensure wallet balance is more than the amount you are funding and re-compile your contracts by running `npm run compile`. Your result should be similar to the below result if your contracts compile successfully. You can ignore the warning errors, these won't affect the functionalities.
 
+![paymaster-compile](https://github.com/user-attachments/assets/ae601968-632a-4e8e-8103-b7196969c91a)
+
+
 To make the deployment easy, go to your `package.json` and this command below to your `deploy`script.
 
 ```js
@@ -949,7 +952,7 @@ Finally, proceed to your terminal and run the paymaster deployment script by ent
 
 If your deployment is successful, you should get a similar result in your terminal like the one below :
 
-
+![paymaster-deploy](https://github.com/user-attachments/assets/0bdf2432-e3b3-4592-8cdb-fc0e3c5ac65c)
 
 
 Congratulation! You have successfully written, tested, and deployed a gasless decentralized escrow system on zkSync.
