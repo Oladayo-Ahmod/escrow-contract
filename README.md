@@ -1231,5 +1231,10 @@ The `refundPayment` function allows either the purchaser or intermediary to refu
 
 
 
+Finally, start your application by running `npm run dev` inside your terminal inside  your `escrow-dapp` directory. 
+
+![frontend](https://github.com/user-attachments/assets/6df6cdac-5394-4cee-9a66-0c46fe18ab00)
+
+
 
 
