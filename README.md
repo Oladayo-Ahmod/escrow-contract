@@ -972,7 +972,7 @@ First, create a new Next.js project. You can set it up using the following comma
 npx create-next-app escrow-dapp
 cd escrow-dapp
 ```
-Once the project is set up, install `ethers.js`, a JavaScript library that helps interact with the Ethereum blockchain.
+Once the project is set up, install `ethers.js`, a JavaScript library that helps interact with the Ethereum blockchain by running the command below :
 
 ` npm install ethers`
 
