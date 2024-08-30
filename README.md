@@ -1213,3 +1213,23 @@ export default Escrow;
 
 Note: Do not forget to replace `YOUR_CONTRACT_ADDRESS_HERE` with your contract address.
 
+### Brief explanation of the functions.
+
+The `registerPurchaser` function allows a user to register themselves as a purchaser. Only one purchaser can be registered at a time.
+
+Similarly, the `registerVendor` function registers the caller as the vendor. Like the purchaser, only one vendor can be registered.
+
+The `createAgreement` function allows the vendor to create an agreement by specifying a title, description, and amount. We will add form inputs to gather these details and a button to trigger the contract function.
+
+The `enterAgreement` function allows the purchaser to enter into an agreement created by the vendor. This requires an agreement ID.
+
+The `depositFunds` function allows the purchaser to deposit funds into the escrow for a specific agreement. This also requires an agreement ID and the ETH amount.
+
+The `releasePayment` function is called by the intermediary to release the escrowed funds to the vendor. This function also requires an agreement ID.
+
+The `refundPayment` function allows either the purchaser or intermediary to refund the funds back to the purchaser if the escrow is not completed.
+
+
+
+
+
