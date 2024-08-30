@@ -960,7 +960,7 @@ If your deployment is successful, you should get a similar result in your termin
 
 Congratulation! You have successfully written, tested, and deployed a gasless decentralized escrow system on zkSync.
 
-### Frontend Interaction with the Escrow Contracts
+## Frontend Interaction with the Escrow Contracts
 
 In this section, we will explore how to interact with the `Escrow` contract using Next.js and Ethers.js. We'll cover setting up the Next.js environment, connecting to the blockchain, and interfacing with various functions of the smart contract.
 
@@ -975,6 +975,10 @@ cd escrow-dapp
 Once the project is set up, install `ethers.js`, a JavaScript library that helps interact with the Ethereum blockchain by running the command below :
 
 ` npm install ethers`
+
+Also, let's add Bootstrap to the project to style our UI components. Install Bootstrap by running the following command:
+
+`npm install bootstrap`
 
 ### Setting Connection to the Blockchain
 
@@ -1003,7 +1007,24 @@ export { provider, signer, connectWallet };
 
 ```
 
-Note : Replace 'YOUR_INFURA_PROJECT_ID' with your Infura project ID.
+Note: Replace `YOUR_INFURA_PROJECT_ID` with your Infura project ID.
+
+Next, create a new folder 📂 `abi`, and create a new file `Escrow.json`. Copy the ABI from your deployed Escrow contract and paste it into the file you created.
+
+###  Interacting with the Escrow Contract
+
+First, let's import Bootstrap CSS inside `layout.js` or `layout.ts` to make Bootstrap styles available globally in the application.
+
+`import 'bootstrap/dist/css/bootstrap.min.css';`
+
+Currently, your folder should be similar to the one in the image below :
+
+![folder-structure](https://github.com/user-attachments/assets/772601df-6631-4475-9df4-076b717c3d1d)
 
 
+Now, let's paste the following code into `page.js` or `page.ts` in case you are using Typescript.
+
+```js
+
+```
 
