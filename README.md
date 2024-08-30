@@ -27,6 +27,7 @@ transparent, and efficient transactions on zkSync, a cutting-edge layer 2 scalin
 -  [Paymaster Complete Code](#paymaster-complete-code)
 -  [Deploying Smart Contract](#deploying-smart-contract)
 -  [Deploying and Funding Paymaster](#deploying-and-funding-paymaster)
+-  [Frontend Interaction with the Escrow Contracts](#frontend-interaction-with-the-smart-contracts)
 
 ## Introduction
 
@@ -958,5 +959,51 @@ If your deployment is successful, you should get a similar result in your termin
 
 
 Congratulation! You have successfully written, tested, and deployed a gasless decentralized escrow system on zkSync.
+
+### Frontend Interaction with the Escrow Contracts
+
+In this section, we will explore how to interact with the `Escrow` contract using Next.js and Ethers.js. We'll cover setting up the Next.js environment, connecting to the blockchain, and interfacing with various functions of the smart contract.
+
+### Setting Up Next.js Project
+
+First, create a new Next.js project. You can set it up using the following command inside your project root directory:
+
+```
+npx create-next-app escrow-dapp
+cd escrow-dapp
+```
+Once the project is set up, install `ethers.js`, a JavaScript library that helps interact with the Ethereum blockchain.
+
+` npm install ethers`
+
+### Setting Connection to the Blockchain
+
+First, create a new folder 📂 `utils`, and create a new file `ethers.js` inside it to handle the connection setup:
+
+```js
+import { ethers } from 'ethers';
+
+let provider;
+let signer;
+
+if (typeof window !== 'undefined' && typeof window.ethereum !== 'undefined') {
+  // We are in the browser and MetaMask is running
+  provider = new ethers.BrowserProvider(window.ethereum);
+} else {
+  // We are on the server *OR* the user is not running MetaMask
+  provider = new ethers.JsonRpcProvider('https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID');
+}
+
+const connectWallet = async () => {
+  await provider.send('eth_requestAccounts', []);
+  signer = await provider.getSigner();
+};
+
+export { provider, signer, connectWallet };
+
+```
+
+Note : Replace 'YOUR_INFURA_PROJECT_ID' with your Infura project ID.
+
 
 
