@@ -80,7 +80,7 @@ contract Escrow {
 
     function depositFunds(uint8 _agreementId) external onlyPurchaser payable onlyNotFinished {
         require(!isFunded, "Funds have already been deposited");
-        require(_agreementId <= totalAgreements && _agreementId > 0, "agreement not found");
+        require(_agreementId <= totalAgreements && _agreementId > 0, "agreement not found");                                                                    
         Agreement storage agreement = agreements[_agreementId];
         uint budgetedAmount = agreement.amount;
         require(msg.value >= budgetedAmount, "Invalid deposit amount");

@@ -923,7 +923,7 @@ Finally, the function below get the wallet through the supplied private key in t
 
 Note: before you proceed to deploy your contracts, ensure wallet balance is more than the amount you are funding and re-compile your contracts by running `npm run compile`. Your result should be similar to the below result if your contracts compile successfully. You can ignore the warning errors, these won't affect the functionalities.
 
-To make the deployment easy, go to your `package.json` and this command below to your `deploy`script.
+To make the deployment easy, go to your `package.json` and add this command below to your `deploy`script.
 
 ```js
 "deploy-paymaster": "hardhat deploy-zksync --script deploy-paymaster.ts",
