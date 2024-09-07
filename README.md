@@ -27,6 +27,7 @@ transparent, and efficient transactions on zkSync, a cutting-edge layer 2 scalin
 -  [Paymaster Complete Code](#paymaster-complete-code)
 -  [Deploying Smart Contract](#deploying-smart-contract)
 -  [Deploying and Funding Paymaster](#deploying-and-funding-paymaster)
+-  [Frontend Interaction with the Escrow Contracts](#frontend-interaction-with-the-escrow-contracts)
 
 ## Introduction
 
@@ -41,7 +42,7 @@ zkSync is a layer 2 scaling solution for Ethereum. It is designed not only to in
 
 ## Environment Setup
 
-zkSync provides easy ways to get started with setting your environment by providing great plugins on Hardhat and Foundry. You can get started by using use one of the two. However, for this tutorial, we will be using hardhat.
+zkSync provides easy ways to get started with setting your environment by giving great plugins on Hardhat and Foundry. You can get started by using use one of the two. However, we will be using hardhat for this tutorial.
 
 Run the below command inside your terminal to create the project with the necessary dependencies.
 
@@ -909,6 +910,8 @@ export default async function () {
 Our contract name `Escrow` is passed in `deployContract` function and empty array `[]` is passed as the second argument because the contract's constructor doesn't require an argument while paymaster contract's name 
 `GaslessPaymaster` is passed in the second `deployContract` function.
 
+However, you can comment out this line ` await deployContract("Escrow",[]);` if you already have a deployed contract and you do not want to redeploy it.
+
 Finally, the function below get the wallet through the supplied private key in the `.env` and funds it with `0.08 ETH`. 
 
 ```javascript
@@ -923,7 +926,10 @@ Finally, the function below get the wallet through the supplied private key in t
 
 Note: before you proceed to deploy your contracts, ensure wallet balance is more than the amount you are funding and re-compile your contracts by running `npm run compile`. Your result should be similar to the below result if your contracts compile successfully. You can ignore the warning errors, these won't affect the functionalities.
 
-To make the deployment easy, go to your `package.json` and add this command below to your `deploy`script.
+![paymaster-compile](https://github.com/user-attachments/assets/ae601968-632a-4e8e-8103-b7196969c91a)
+
+
+To make the deployment easy, go to your `package.json` and this command below to your `deploy`script.
 
 ```js
 "deploy-paymaster": "hardhat deploy-zksync --script deploy-paymaster.ts",
@@ -949,9 +955,286 @@ Finally, proceed to your terminal and run the paymaster deployment script by ent
 
 If your deployment is successful, you should get a similar result in your terminal like the one below :
 
-
+![paymaster-deploy](https://github.com/user-attachments/assets/0bdf2432-e3b3-4592-8cdb-fc0e3c5ac65c)
 
 
 Congratulation! You have successfully written, tested, and deployed a gasless decentralized escrow system on zkSync.
+
+## Frontend Interaction with the Escrow Contracts
+
+In this section, we will explore how to interact with the `Escrow` contract using Next.js and Ethers.js. We'll cover setting up the Next.js environment, connecting to the blockchain, and interfacing with various functions of the smart contract.
+
+### Setting Up Next.js Project
+
+First, create a new Next.js project. You can set it up using the following command inside your project root directory:
+
+```
+npx create-next-app escrow-dapp
+cd escrow-dapp
+```
+Once the project is set up, install `ethers.js`, a JavaScript library that helps interact with the Ethereum blockchain by running the command below :
+
+` npm install ethers`
+
+Also, let's add Bootstrap to the project to style our UI components. Install Bootstrap by running the following command:
+
+`npm install bootstrap`
+
+### Setting Connection to the Blockchain
+
+First, create a new folder 📂 `utils`, and create a new file `ethers.js` inside it to handle the connection setup:
+
+```js
+import { ethers } from 'ethers';
+
+let provider;
+let signer;
+
+if (typeof window !== 'undefined' && typeof window.ethereum !== 'undefined') {
+  // We are in the browser and MetaMask is running
+  provider = new ethers.BrowserProvider(window.ethereum);
+} else {
+  // We are on the server *OR* the user is not running MetaMask
+  provider = new ethers.JsonRpcProvider('https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID');
+}
+
+const connectWallet = async () => {
+  await provider.send('eth_requestAccounts', []);
+  signer = await provider.getSigner();
+};
+
+export { provider, signer, connectWallet };
+
+```
+
+Note: Replace `YOUR_INFURA_PROJECT_ID` with your Infura project ID.
+
+Next, create a new folder 📂 `abi`, and create a new file `Escrow.json`. Copy the ABI from your deployed Escrow contract and paste it into the file you created.
+
+###  Interacting with the Escrow Contract
+
+First, let's import Bootstrap CSS inside `layout.js` or `layout.ts` to make Bootstrap styles available globally in the application.
+
+`import 'bootstrap/dist/css/bootstrap.min.css';`
+
+Currently, your folder should be similar to the one in the image below :
+
+![folder-structure](https://github.com/user-attachments/assets/772601df-6631-4475-9df4-076b717c3d1d)
+
+
+Now, let's paste the following code into `page.js` or `page.ts` in case you are using Typescript.
+
+```js
+
+import React, { useState } from 'react';
+import { ethers } from 'ethers';
+import EscrowABI from '../app/abi/Escrow.json';
+import { connectWallet, signer } from '../app/utils/ethers';
+
+const Escrow = () => {
+  const [contract, setContract] = useState(null);
+  const [status, setStatus] = useState('');
+  const [agreementId, setAgreementId] = useState('');
+  const [agreementDetails, setAgreementDetails] = useState({
+    title: '',
+    description: '',
+    amount: '',
+  });
+
+  const contractAddress = 'YOUR_CONTRACT_ADDRESS_HERE';
+
+  const initializeContract = async () => {
+    await connectWallet();
+    const escrowContract = new ethers.Contract(contractAddress, EscrowABI, signer);
+    setContract(escrowContract);
+    setStatus('Contract initialized!');
+  };
+
+  const handleInputChange = (e) => {
+    setAgreementDetails({ ...agreementDetails, [e.target.name]: e.target.value });
+  };
+
+  const registerPurchaser = async () => {
+    try {
+      const tx = await contract.registerPurchaser();
+      await tx.wait();
+      setStatus('Purchaser registered!');
+    } catch (err) {
+      console.error(err);
+      setStatus('Error registering purchaser');
+    }
+  };
+
+  const registerVendor = async () => {
+    try {
+      const tx = await contract.registerVendor();
+      await tx.wait();
+      setStatus('Vendor registered!');
+    } catch (err) {
+      console.error(err);
+      setStatus('Error registering vendor');
+    }
+  };
+
+  const createAgreement = async () => {
+    try {
+      const { title, description, amount } = agreementDetails;
+      const tx = await contract.createAgreement(title, description, ethers.parseEther(amount));
+      await tx.wait();
+      setStatus('Agreement created!');
+    } catch (err) {
+      console.error(err);
+      setStatus('Error creating agreement');
+    }
+  };
+
+  const enterAgreement = async () => {
+    try {
+      const tx = await contract.enterAgreement(agreementId);
+      await tx.wait();
+      setStatus('Entered into agreement!');
+    } catch (err) {
+      console.error(err);
+      setStatus('Error entering agreement');
+    }
+  };
+
+  const depositFunds = async () => {
+    try {
+      const tx = await contract.depositFunds(agreementId, {
+        value: ethers.parseEther(agreementDetails.amount),
+      });
+      await tx.wait();
+      setStatus('Funds deposited!');
+    } catch (err) {
+      console.error(err);
+      setStatus('Error depositing funds');
+    }
+  };
+
+  const releasePayment = async () => {
+    try {
+      const tx = await contract.releasePayment(agreementId);
+      await tx.wait();
+      setStatus('Payment released!');
+    } catch (err) {
+      console.error(err);
+      setStatus('Error releasing payment');
+    }
+  };
+
+  const refundPayment = async () => {
+    try {
+      const tx = await contract.refundPayment(agreementId);
+      await tx.wait();
+      setStatus('Payment refunded!');
+    } catch (err) {
+      console.error(err);
+      setStatus('Error refunding payment');
+    }
+  };
+
+  return (
+    <div className="container">
+      <h1 className="mt-4">Escrow DApp</h1>
+      <button className="btn btn-primary" onClick={initializeContract}>
+        Connect to Contract
+      </button>
+      <p>{status}</p>
+
+      <button className="btn btn-success mt-3" onClick={registerPurchaser}>
+        Register as Purchaser
+      </button>
+
+      <button className="btn btn-info mt-3" onClick={registerVendor}>
+        Register as Vendor
+      </button>
+
+      <div className="form-group mt-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Title"
+          name="title"
+          value={agreementDetails.title}
+          onChange={handleInputChange}
+        />
+        <textarea
+          className="form-control mt-2"
+          placeholder="Description"
+          name="description"
+          value={agreementDetails.description}
+          onChange={handleInputChange}
+        />
+        <input
+          type="text"
+          className="form-control mt-2"
+          placeholder="Amount (ETH)"
+          name="amount"
+          value={agreementDetails.amount}
+          onChange={handleInputChange}
+        />
+        <button className="btn btn-warning mt-3" onClick={createAgreement}>
+          Create Agreement
+        </button>
+      </div>
+
+      <div className="form-group mt-3">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Agreement ID"
+          value={agreementId}
+          onChange={(e) => setAgreementId(e.target.value)}
+        />
+        <button className="btn btn-secondary mt-2" onClick={enterAgreement}>
+          Enter Agreement
+        </button>
+      </div>
+
+      <button className="btn btn-danger mt-3" onClick={depositFunds}>
+        Deposit Funds
+      </button>
+
+      <button className="btn btn-success mt-3" onClick={releasePayment}>
+        Release Payment
+      </button>
+
+      <button className="btn btn-dark mt-3" onClick={refundPayment}>
+        Refund Payment
+      </button>
+    </div>
+  );
+};
+
+export default Escrow;
+
+```
+
+Note: Do not forget to replace `YOUR_CONTRACT_ADDRESS_HERE` with your contract address.
+
+### Brief explanation of the functions.
+
+The `registerPurchaser` function allows a user to register themselves as a purchaser. Only one purchaser can be registered at a time.
+
+Similarly, the `registerVendor` function registers the caller as the vendor. Like the purchaser, only one vendor can be registered.
+
+The `createAgreement` function allows the vendor to create an agreement by specifying a title, description, and amount. We will add form inputs to gather these details and a button to trigger the contract function.
+
+The `enterAgreement` function allows the purchaser to enter into an agreement created by the vendor. This requires an agreement ID.
+
+The `depositFunds` function allows the purchaser to deposit funds into the escrow for a specific agreement. This also requires an agreement ID and the ETH amount.
+
+The `releasePayment` function is called by the intermediary to release the escrowed funds to the vendor. This function also requires an agreement ID.
+
+The `refundPayment` function allows either the purchaser or intermediary to refund the funds back to the purchaser if the escrow is not completed.
+
+
+
+Finally, start your application by running `npm run dev` inside your terminal inside  your `escrow-dapp` directory. 
+
+![frontend](https://github.com/user-attachments/assets/6df6cdac-5394-4cee-9a66-0c46fe18ab00)
+
+
 
 
